@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.SysUserDao">
+
+    <!--修改-->
+    <update id="updateObject"
+            parameterType="com.example.demo.entity.SysUser">
+        update sys_users set
+        username=#{username},
+        mobile=#{mobile},
+        email=#{email},
+        deptId=#{deptId},
+        modifiedTime=now(),
+        modifiedUser=#{modifiedUser}
+        where id=#{id}
+    </update>
+
+    <!--修改页面的回显-->
+    <select id="findObjectById"
+            parameterType="int"
+            resultMap="sysUserDeptVo">
+        select * from sys_users where id=#{id}
+    </select>
+
+    <!--添加-->
+    <insert id="insertObject"
+            parameterType="com.example.demo.entity.SysUser"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_users
+        (username,password,deptId,email,mobile,salt,valid,
+        createdTime,modifiedTime,createdUser,modifiedUser)
+        values
+        (#{username},#{password},#{deptId},#{email},#{mobile},#{salt},#{valid},
+        now(),now(),#{createdUser},#{modifiedUser})
+    </insert>
+
+    <!--设置禁用-->
+    <update id="validById">
+        update sys_users set
+        valid=#{valid},
+        modifiedUser=#{modifiedUser},
+        modifiedTime=now()
+        where id=#{id}
+    </update>
+
+    <!--提取共性文件-->
+    <sql id="queryWhereId">
+        from sys_users
+        <where>
+            <if test="username!=null and username!= ''">
+                username like concat("%",#{username},"%")
+            </if>
+        </where>
+    </sql>
+    <!--查询总页数-->
+    <select id="getRowCount"
+            resultType="int">
+        select count(*)
+        <include refid="queryWhereId"/>
+    </select>
+
+    <!--Map-->
+    <resultMap id="sysUserDeptVo"
+               type="com.example.demo.common.vo.SysUserDeptVo">
+        <association property="sysDept"
+                column="deptId"
+                select="com.example.demo.dao.SysDeptDao.findById">
+        </association>
+    </resultMap>
+    <!--分页查询-->
+    <select id="findPageObjects"
+            resultMap="sysUserDeptVo">
+        select *
+        <include refid="queryWhereId"/>
+        order by createdTime desc
+        limit #{startIndex},#{pageSize}
+    </select>
+
+</mapper>

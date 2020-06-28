@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.SysRoleDao">
+    
+    <!--更新数据实现-->
+    <update id="updateObject"
+        parameterType="com.example.demo.entity.SysRole">
+        update sys_roles set
+        name=#{name},
+        note=#{note},
+        modifiedUser=#{modifiedUser},
+        modifiedTime=now()
+        where id=#{id}
+    </update>
+
+    <resultMap id="sysRoleMenuVo"
+               type="com.example.demo.common.vo.SysRoleMenuVo">
+        <id property="id" column="id"/>
+        <collection property="menuIds"
+                    ofType="integer"
+                    column="id"
+                    select="com.example.demo.dao.SysRoleMenuDao.findMenuIdsByRoleId">
+        </collection>
+    </resultMap>
+    <!--添加页面树结构呈现-->
+    <select id="fingdObjectById"
+            resultMap="sysRoleMenuVo">
+           select id,name,note
+           from sys_roles
+           where id=#{id}
+    </select>
+    
+    <!--添加-->
+    <insert id="insertObject"
+            parameterType="com.example.demo.entity.SysRole"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        insert into sys_roles
+         (id,name,note,createdTime,modifiedTime,
+         createdUser,modifiedUser)
+         values
+         (null,#{name},#{note},now(),now(),
+         #{createdUser},#{modifiedUser})
+    </insert>
+
+    <!--查询提取共性-->
+    <sql id="queryWhereId">
+        <where>
+            <if test="name!=null and name!=''">
+                name like concat("%",#{name},"%")
+            </if>
+        </where>
+    </sql>
+
+    <!--查询总记录数-->
+    <select id="getRowCount" resultType="int">
+        select count(*) from sys_roles
+       <include refid="queryWhereId"/>
+    </select>
+
+    <!--查询当前页-->
+    <select id="findPageObjects"
+            resultType="com.example.demo.entity.SysRole">
+        select * from sys_roles
+        <include refid="queryWhereId"/>
+        order by createdTime desc
+        limit #{startIndex},#{pageSize}
+    </select>
+</mapper>

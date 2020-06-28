@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.SysLogDao">
+
+
+    <insert id="insertObject">
+        insert into sys_logs
+        (username,operation,method,params,time,ip,createdTime)
+        values
+        (#{username},#{operation},#{method},#{params},#{time},#{ip},#{createdTime})
+    </insert>
+
+    <!--删除-->
+    <delete id="deleteObjects">
+        delete from sys_logs
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--提取共性文件-->
+    <sql id="queryWhereId">
+        <where>
+            <if test="username!=null and username!= ''">
+                username like concat("%",#{username},"%")
+            </if>
+        </where>
+    </sql>
+
+    <!--查询总页数-->
+    <select id="getRowCount"
+            resultType="int">
+        select count(*) from sys_logs
+        <include refid="queryWhereId"/>
+    </select>
+
+    <!--分页查询-->
+    <select id="findPageObjects"
+            resultType="com.example.demo.entity.SysLog">
+        select * from sys_logs
+        <include refid="queryWhereId"/>
+        order by createdTime desc
+        limit #{startIndex},#{pageSize}
+    </select>
+</mapper>
