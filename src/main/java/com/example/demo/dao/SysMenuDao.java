@@ -2,6 +2,7 @@ package com.example.demo.dao;
 //菜单
 
 import com.example.demo.common.vo.Node;
+import com.example.demo.common.vo.SysUserMenu;
 import com.example.demo.entity.SysMenu;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -11,6 +12,15 @@ import java.util.Map;
 
 @Mapper
 public interface SysMenuDao {
+
+
+    /**
+     * 基于用户的id,找到菜单的一级.二级id 查询一二级对应的菜单信息
+     * @param menuIds
+     * @return
+     */
+    List<SysUserMenu> findMenusByIds(List<Integer> menuIds);
+
 
 
     /**

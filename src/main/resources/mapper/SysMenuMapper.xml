@@ -3,6 +3,36 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.dao.SysMenuDao">
 
+    <select id="findMenusByIds"
+            resultMap="sysUserMenu">
+        select p.id,p.name,p.url,c.id cid,c.name cname,c.url curl
+        from sys_menus p join sys_menus c
+        on c.parentId=p.id
+        <where>
+            <foreach collection="menuIds"
+                     open="("
+                     close=")"
+                     separator="or"
+                     item="menuId">
+                c.id=#{menuId}
+            </foreach>
+            and p.parentId is null
+        </where>
+    </select>
+
+    <resultMap type="com.example.demo.common.vo.SysUserMenu" id="sysUserMenu">
+        <!-- 一级菜单映射 -->
+        <id  property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+        <!-- 二级菜单映射 -->
+        <collection property="childs" ofType="com.example.demo.common.vo.SysUserMenu">
+            <id  property="id" column="cid"/>
+            <result property="name" column="cname"/>
+            <result property="url" column="curl"/>
+        </collection>
+    </resultMap>
+
 
     <select id="findPermissions"
             resultType="string">

@@ -3,7 +3,7 @@
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
-<html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -250,7 +250,7 @@ desired effect
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">HEADER</li>
         <!-- Optionally, you can add icons to the links -->
-        <li class="treeview">
+        <!--<li class="treeview">
         <a href="#"><i class="fa fa-link"></i> 
         <span>商品管理</span>
          <span class="pull-right-container">
@@ -263,21 +263,24 @@ desired effect
             <li><a id="load-brand-id">品牌管理</a></li>
             <li><a id="load-attr-id">属性管理</a></li>
         </ul>
-        </li> 
-        <li class="treeview">
+        </li> -->
+        <li class="treeview" th:each="m:${userMenus}">
           <a href="#"><i class="fa fa-link"></i> 
-          <span>系统管理</span>
+          <span>[[${m.name}]]</span>
             <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
           </a>
           <ul class="treeview-menu">
-            <li><a id="load-dept-id">部门管理</a></li>
-            <li><a id="load-menu-id">菜单管理</a></li>
+            <li th:each="c:${m.childs}">
+              <a th:onclick="javascript:doLoadRS([[${c.url}]])">[[${c.name}]]</a></li>
+
+
+           <!-- <li><a id="load-menu-id">菜单管理</a></li>
             <li><a id="load-role-id">角色管理</a></li>
             <li><a id="load-user-id">用户管理</a></li>
             <li><a id="load-log-id"> 日志管理</a></li>
-            <li><a id="load-pwd-id"> 修改密码</a></li>
+            <li><a id="load-pwd-id"> 修改密码</a></li>-->
           </ul>
         </li>
       </ul>
@@ -420,27 +423,9 @@ desired effect
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
 <script type="text/javascript">
-      $(function(){//页面加载完成之后执行
-    	  doLoadUI("load-log-id","log/log_list");
-    	  doLoadUI("load-menu-id","menu/menu_list");
-    	  doLoadUI("load-role-id","role/role_list");
-    	  doLoadUI("load-dept-id","dept/dept_list");
-    	  doLoadUI("load-user-id","user/user_list");
-    	  doLoadUI("load-pwd-id","user/pwd_edit");
-      });
-      
-      function doLoadUI(id,url){
-    	  //var dom=document.getElementById(id);
-    	  //dom.onclick=function(){
-    		//  $("#mainContentId").load(url); 
-    	  //}
-    	  $("#"+id).click(function(){//事件处理函数
-    		  console.log("====");
-    		  //load函数为一个jquery中的ajax函数,其作用是将url对应的资源，异步加载到指定位置
-    		  //此处表示在mainContentId对应的对象位置异步加载url指定资源
-    		  $("#mainContentId").load(url); 
-    	  }) 
-      }
+  function doLoadRS(url){
+    $("#mainContentId").load(url);
+  }
       
 </script>
 </body>

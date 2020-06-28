@@ -3,7 +3,10 @@ package com.example.demo.Service.impl;
 import com.example.demo.Service.SysMenuService;
 import com.example.demo.common.exception.ServiceException;
 import com.example.demo.common.vo.Node;
+import com.example.demo.common.vo.SysUserMenu;
 import com.example.demo.dao.SysMenuDao;
+import com.example.demo.dao.SysRoleMenuDao;
+import com.example.demo.dao.SysUserRoleDao;
 import com.example.demo.entity.SysMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -19,6 +22,25 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Autowired
     private SysMenuDao SysMenuDao;
+    @Autowired
+    private SysUserRoleDao sysUserRoleDao;
+    @Autowired
+    private SysRoleMenuDao SysRoleMenuDao;
+
+    /**
+     * 菜单动态显示
+     * @param id
+     * @return
+     */
+    @Override
+    public List<SysUserMenu> findUserMenusByUserId(Integer id) {
+        //1.基于用户id获取角色id
+        List<Integer> roleIds = sysUserRoleDao.findRoleIdByUserId(id);
+        // 2.基于角色id获取菜单id
+        List<Integer> menuIds = SysRoleMenuDao.findMenuIdsByRoleIds(roleIds);
+        //3.基于菜单获取一级菜单和二级菜单信心
+        return SysMenuDao.findMenusByIds(menuIds);
+    }
 
     //修改
     @CacheEvict(value = "menuCache",allEntries=true)

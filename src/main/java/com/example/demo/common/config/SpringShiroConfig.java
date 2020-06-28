@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.common.config;
 
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.cache.MemoryConstrainedCacheManager;
